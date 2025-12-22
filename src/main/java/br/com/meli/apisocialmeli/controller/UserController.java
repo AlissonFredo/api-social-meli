@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("users")
 public class UserController {
@@ -20,8 +22,16 @@ public class UserController {
 
     @GetMapping("/{userId}/followers/count")
     public ResponseEntity<?> obterTotalSeguidoresDoVendedor(@PathVariable Long userId) {
-        UserFollowersCountDto response = userService.obterTotalSeguidoresDoVendedor(userId);
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        try {
+            UserFollowersCountDto response = userService.obterTotalSeguidoresDoVendedor(userId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{userId}/followers/list")
