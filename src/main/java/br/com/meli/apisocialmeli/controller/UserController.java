@@ -27,7 +27,7 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -35,8 +35,16 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followers/list")
-    public String listarSeguidoresDoVendedor(@PathVariable Long userId) {
-        return "listarSeguidoresDoVendedor | userId: " + userId;
+    public ResponseEntity<?> listarSeguidoresDoVendedor(@PathVariable Long userId) {
+        try {
+            return new ResponseEntity<>(userService.listarSeguidoresDoVendedor(userId), HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{userId}/followed/list")
