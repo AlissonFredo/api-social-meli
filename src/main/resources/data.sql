@@ -1,6 +1,6 @@
 SET FOREIGN_KEY_CHECKS=0;
 
-INSERT INTO user (nome, tipo, created_at)
+INSERT INTO users (nome, tipo, created_at)
 SELECT s.nome, s.tipo, NOW()
 FROM (
     -- BUYERS
@@ -46,9 +46,38 @@ FROM (
          SELECT 'Felipe Aragao','SELLER' UNION ALL
          SELECT 'Gabriela Duarte','SELLER'
      ) s
-         LEFT JOIN user u
+         LEFT JOIN users u
                    ON u.nome = s.nome AND u.tipo = s.tipo
 WHERE u.id IS NULL;
+
+INSERT INTO follow (follower_id, seller_id, created_at)
+SELECT uf.id AS follower_id, us.id AS seller_id, NOW()
+FROM (
+         SELECT 'Maria Silva'        AS follower_nome, 'Gabriel Nunes'        AS seller_nome UNION ALL
+         SELECT 'Pedro Souza',                           'Larissa Pinto'                          UNION ALL
+         SELECT 'Jose Santos',                           'Eduardo Dias'                           UNION ALL
+         SELECT 'Ana Oliveira',                          'Aline Melo'                              UNION ALL
+         SELECT 'Joao Pereira',                          'Victor Cardoso'                          UNION ALL
+         SELECT 'Carlos Lima',                           'Leticia Castro'                          UNION ALL
+         SELECT 'Fernanda Gomes',                        'Diego Rezende'                           UNION ALL
+         SELECT 'Paulo Ribeiro',                         'Isabella Figueiredo'                     UNION ALL
+         SELECT 'Lucas Carvalho',                        'Marcelo Tavares'                         UNION ALL
+         SELECT 'Mariana Almeida',                       'Priscila Brito'                          UNION ALL
+         SELECT 'Rafael Ferreira',                       'Guilherme Pires'                         UNION ALL
+         SELECT 'Juliana Rocha',                         'Tatiana Sales'                           UNION ALL
+         SELECT 'Bruno Fernandes',                       'Fabio Cunha'                             UNION ALL
+         SELECT 'Camila Araujo',                         'Carolina Novaes'                         UNION ALL
+         SELECT 'Thiago Moreira',                        'Danilo Macedo'                           UNION ALL
+         SELECT 'Beatriz Teixeira',                      'Bianca Valente'                          UNION ALL
+         SELECT 'Ricardo Correia',                       'Roberto Mota'                            UNION ALL
+         SELECT 'Luana Barros',                          'Renata Paiva'                            UNION ALL
+         SELECT 'Andre Costa',                           'Felipe Aragao'                           UNION ALL
+         SELECT 'Sofia Martins',                         'Gabriela Duarte'
+     ) pares
+         JOIN users uf ON uf.nome = pares.follower_nome AND uf.tipo = 'BUYER'
+         JOIN users us ON us.nome = pares.seller_nome   AND us.tipo = 'SELLER'
+         LEFT JOIN follow f ON f.follower_id = uf.id AND f.seller_id = us.id
+WHERE f.id IS NULL;
 
 SET FOREIGN_KEY_CHECKS=1;
 
