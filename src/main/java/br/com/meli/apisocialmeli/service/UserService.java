@@ -47,8 +47,8 @@ public class UserService {
                 .stream()
                 .map(f -> {
                     UserDto userDto = new UserDto();
-                    userDto.setUserId(f.getSeller().getId());
-                    userDto.setUserName(f.getSeller().getNome());
+                    userDto.setUserId(f.getFollower().getId());
+                    userDto.setUserName(f.getFollower().getNome());
                     return userDto;
                 })
                 .collect(Collectors.toList());
