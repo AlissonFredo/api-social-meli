@@ -1,5 +1,6 @@
 package br.com.meli.apisocialmeli.service;
 
+import br.com.meli.apisocialmeli.dto.BuyerFollowingResponseDto;
 import br.com.meli.apisocialmeli.dto.SellerFollowersResponseDto;
 import br.com.meli.apisocialmeli.dto.UserDto;
 import br.com.meli.apisocialmeli.dto.UserFollowersCountDto;
@@ -58,5 +59,31 @@ public class UserService {
         sellerFollowersResponseDto.setFollowers(followers);
 
         return sellerFollowersResponseDto;
+    }
+
+    public BuyerFollowingResponseDto listarVendedoresSeguidosPorUsuario(Long userId) {
+        UserModel userModel = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("Usuário " + userId + " não encontrado"));
+
+        if (userModel.getTipo() == UserTipo.SELLER) {
+            throw new IllegalStateException("O usuário " + userId + " não é um comprador");
+        }
+
+        List<UserDto> followed = userModel.getSeguindo()
+                .stream()
+                .map(f -> {
+                    UserDto userDto = new UserDto();
+                    userDto.setUserId(f.getSeller().getId());
+                    userDto.setUserName(f.getSeller().getNome());
+                    return userDto;
+                })
+                .collect(Collectors.toList());
+
+        BuyerFollowingResponseDto buyerFollowingResponseDto = new BuyerFollowingResponseDto();
+        buyerFollowingResponseDto.setUserId(userModel.getId());
+        buyerFollowingResponseDto.setUserName(userModel.getNome());
+        buyerFollowingResponseDto.setFollowed(followed);
+
+        return buyerFollowingResponseDto;
     }
 }

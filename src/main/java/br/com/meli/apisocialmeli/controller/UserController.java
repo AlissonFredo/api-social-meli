@@ -48,7 +48,15 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followed/list")
-    public String listarVendedoresSeguidosPorUsuario(@PathVariable Long userId) {
-        return "listarVendedoresSeguidosPorUsuario | userId: " + userId;
+    public ResponseEntity<?> listarVendedoresSeguidosPorUsuario(@PathVariable Long userId) {
+        try {
+            return new ResponseEntity<>(userService.listarVendedoresSeguidosPorUsuario(userId), HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
