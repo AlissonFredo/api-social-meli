@@ -1,9 +1,6 @@
 package br.com.meli.apisocialmeli.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -40,13 +37,27 @@ public class ProductModel {
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
 
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt.plusSeconds(1);
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(this.createdAt)) {
+            this.updatedAt = now;
+        } else {
+            this.updatedAt = this.createdAt.plusSeconds(1);
+        }
+    }
 
     public Long getId() {
         return id;
