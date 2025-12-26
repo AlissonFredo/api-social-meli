@@ -31,6 +31,9 @@ public class UserModel {
     @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY)
     private Set<FollowModel> seguidores = new HashSet<>();
 
+    @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY)
+    private Set<ProductModel> produtos = new HashSet<>();
+
     public UserTipo getTipo() {
         return tipo;
     }
@@ -77,5 +80,13 @@ public class UserModel {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<ProductModel> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(Set<ProductModel> produtos) {
+        this.produtos = produtos;
     }
 }

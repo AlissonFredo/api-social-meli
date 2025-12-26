@@ -79,5 +79,16 @@ FROM (
          LEFT JOIN follow f ON f.follower_id = uf.id AND f.seller_id = us.id
 WHERE f.id IS NULL;
 
+INSERT INTO products (user_id, name, type, brand, color, notes, category, price, created_at, updated_at)
+SELECT us.id, CONCAT(t.name_prefix, ' - ', us.nome) AS name, t.type, t.brand, t.color, t.notes, t.category, t.price, NOW(), NOW()
+FROM users us CROSS JOIN (
+    SELECT 'Fone Bluetooth' AS name_prefix, 'ELECTRONICS_COMPUTERS' AS type, 'Sony' AS brand, 'Preto' AS color, 'Com cancelamento de ruído' AS notes, 101 AS category, 299.90 AS price
+    UNION ALL
+    SELECT 'Cadeira Escritório', 'HOME_FURNITURE_DECOR', 'Flexform', 'Cinza', 'Ergonômica com ajuste de altura', 202, 899.00
+    UNION ALL
+    SELECT 'Kit Skincare', 'BEAUTY_PERSONAL_CARE', 'La Roche-Posay', 'Neutro', 'Hidratante + protetor solar', 303, 149.90
+) t
+WHERE us.tipo = 'SELLER' AND NOT EXISTS (SELECT 1 FROM products p WHERE p.user_id = us.id AND p.name = CONCAT(t.name_prefix, ' - ', us.nome));
+
 SET FOREIGN_KEY_CHECKS=1;
 
