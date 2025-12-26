@@ -2,7 +2,6 @@ package br.com.meli.apisocialmeli.service;
 
 import br.com.meli.apisocialmeli.dto.ProductRequestDto;
 import br.com.meli.apisocialmeli.dto.ProductResponseDto;
-import br.com.meli.apisocialmeli.dto.UserDto;
 import br.com.meli.apisocialmeli.model.ProductModel;
 import br.com.meli.apisocialmeli.model.UserModel;
 import br.com.meli.apisocialmeli.model.UserTipo;
@@ -41,24 +40,6 @@ public class ProductService {
 
         ProductModel productSalved = productRepository.save(productModel);
 
-        ProductResponseDto productResponseDto = new ProductResponseDto();
-        productResponseDto.setId(productSalved.getId());
-        productResponseDto.setName(productSalved.getName());
-        productResponseDto.setType(productSalved.getType());
-        productResponseDto.setBrand(productSalved.getBrand());
-        productResponseDto.setColor(productSalved.getColor());
-        productResponseDto.setNotes(productSalved.getNotes());
-        productResponseDto.setCategory(productSalved.getCategory());
-        productResponseDto.setPrice(productSalved.getPrice());
-        productResponseDto.setCreatedAt(productSalved.getCreatedAt());
-        productResponseDto.setUpdatedAt(productSalved.getUpdatedAt());
-
-        UserDto userDto = new UserDto();
-        userDto.setUserId(productSalved.getSeller().getId());
-        userDto.setUserName(productSalved.getSeller().getNome());
-
-        productResponseDto.setSeller(userDto);
-
-        return productResponseDto;
+        return new ProductResponseDto(productSalved);
     }
 }

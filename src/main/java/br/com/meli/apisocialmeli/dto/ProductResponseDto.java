@@ -1,5 +1,6 @@
 package br.com.meli.apisocialmeli.dto;
 
+import br.com.meli.apisocialmeli.model.ProductModel;
 import br.com.meli.apisocialmeli.model.ProductType;
 
 import java.math.BigDecimal;
@@ -17,6 +18,23 @@ public class ProductResponseDto {
     private BigDecimal price;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public ProductResponseDto() {
+    }
+
+    public ProductResponseDto(ProductModel product) {
+        this.id = product.getId();
+        this.seller = new UserDto(product.getSeller().getId(), product.getSeller().getNome());
+        this.name = product.getName();
+        this.type = product.getType();
+        this.brand = product.getBrand();
+        this.color = product.getColor();
+        this.notes = product.getNotes();
+        this.category = product.getCategory();
+        this.price = product.getPrice();
+        this.createdAt = product.getCreatedAt();
+        this.updatedAt = product.getUpdatedAt();
+    }
 
     public Long getId() {
         return id;
