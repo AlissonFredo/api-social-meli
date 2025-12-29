@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FollowRepository extends JpaRepository<FollowModel, Long> {
+    Long deleteByFollowerIdAndSellerId(Long followerId, Long sellerId);
 }
