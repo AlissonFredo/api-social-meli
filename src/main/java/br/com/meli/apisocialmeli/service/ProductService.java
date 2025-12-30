@@ -2,17 +2,21 @@ package br.com.meli.apisocialmeli.service;
 
 import br.com.meli.apisocialmeli.dto.PostRequestDto;
 import br.com.meli.apisocialmeli.dto.PostResponseDto;
-import br.com.meli.apisocialmeli.model.PostModel;
-import br.com.meli.apisocialmeli.model.ProductModel;
-import br.com.meli.apisocialmeli.model.UserModel;
-import br.com.meli.apisocialmeli.model.UserTipo;
+import br.com.meli.apisocialmeli.dto.PostsFollowingLastTwoWeeksResponseDto;
+import br.com.meli.apisocialmeli.model.*;
 import br.com.meli.apisocialmeli.repository.PostRepository;
 import br.com.meli.apisocialmeli.repository.ProductRepository;
 import br.com.meli.apisocialmeli.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -52,4 +56,31 @@ public class ProductService {
 
         return new PostResponseDto(postSalved);
     }
+
+    public PostsFollowingLastTwoWeeksResponseDto getFollowedSuppliersRecentProducts(Long userId) {
+        UserModel buyer = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
+
+        if (buyer.getTipo() == UserTipo.SELLER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + userId + " não é um comprador");
+        }
+
+        List<Long> sellerIds = buyer.getSeguindo()
+                .stream()
+                .map(follow -> follow.getSeller().getId())
+                .toList();
+
+        LocalDateTime dayNow = LocalDateTime.now();
+        LocalDateTime thirteenDaysAgo = dayNow.minusDays(14);
+
+        List<PostModel> posts = postRepository.findBySellerIdInAndCreatedAtBetween(sellerIds, thirteenDaysAgo, dayNow);
+
+        List<PostResponseDto> postsDto = posts
+                .stream()
+                .map(PostResponseDto::new)
+                .toList();
+
+        return new PostsFollowingLastTwoWeeksResponseDto(buyer.getId(), postsDto);
+    }
 }
+
