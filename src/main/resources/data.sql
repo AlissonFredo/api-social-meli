@@ -79,6 +79,7 @@ FROM (
          LEFT JOIN follow f ON f.follower_id = uf.id AND f.seller_id = us.id
 WHERE f.id IS NULL;
 
+/*
 INSERT INTO products (user_id, name, type, brand, color, notes, category, price, created_at, updated_at)
 SELECT us.id, CONCAT(t.name_prefix, ' - ', us.nome) AS name, t.type, t.brand, t.color, t.notes, t.category, t.price, NOW(), NOW()
 FROM users us CROSS JOIN (
@@ -89,6 +90,7 @@ FROM users us CROSS JOIN (
     SELECT 'Kit Skincare', 'BEAUTY_PERSONAL_CARE', 'La Roche-Posay', 'Neutro', 'Hidratante + protetor solar', 303, 149.90
 ) t
 WHERE us.tipo = 'SELLER' AND NOT EXISTS (SELECT 1 FROM products p WHERE p.user_id = us.id AND p.name = CONCAT(t.name_prefix, ' - ', us.nome));
+*/
 
 SET FOREIGN_KEY_CHECKS=1;
 

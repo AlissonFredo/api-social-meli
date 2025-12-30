@@ -1,42 +1,51 @@
 package br.com.meli.apisocialmeli.dto;
 
-import java.math.BigDecimal;
+import br.com.meli.apisocialmeli.model.ProductType;
 
 public class ProductRequestDto {
-    private Long userId;
-    private Integer category;
-    private ProductDto product;
-    private BigDecimal price;
+    private String productName;
+    private ProductType type;
+    private String brand;
+    private String color;
+    private String notes;
 
-    public Long getUserId() {
-        return userId;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public Integer getCategory() {
-        return category;
+    public ProductType getType() {
+        return type;
     }
 
-    public void setCategory(Integer category) {
-        this.category = category;
+    public void setType(ProductType type) {
+        this.type = type;
     }
 
-    public ProductDto getProduct() {
-        return product;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setProduct(ProductDto product) {
-        this.product = product;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public String getColor() {
+        return color;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

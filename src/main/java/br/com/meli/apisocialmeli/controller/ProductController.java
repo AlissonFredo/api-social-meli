@@ -1,6 +1,6 @@
 package br.com.meli.apisocialmeli.controller;
 
-import br.com.meli.apisocialmeli.dto.ProductRequestDto;
+import br.com.meli.apisocialmeli.dto.PostRequestDto;
 import br.com.meli.apisocialmeli.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("publish")
-    public ResponseEntity<?> cadastrarProduto(@RequestBody ProductRequestDto product) {
+    public ResponseEntity<?> cadastrarProduto(@RequestBody PostRequestDto product) {
         try {
             return new ResponseEntity<>(productService.cadastrarProduto(product), HttpStatus.OK);
         } catch (NoSuchElementException e) {

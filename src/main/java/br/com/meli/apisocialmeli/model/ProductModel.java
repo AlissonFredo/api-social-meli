@@ -1,6 +1,8 @@
 package br.com.meli.apisocialmeli.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -11,9 +13,8 @@ public class ProductModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserModel seller;
+    @OneToOne(mappedBy = "produto")
+    private PostModel post;
 
     @Column(nullable = false, length = 50)
     private String name;
@@ -31,32 +32,16 @@ public class ProductModel {
     @Column(length = 500)
     private String notes;
 
-    @Column(nullable = false)
-    private Integer category;
-
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal price;
-
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    private void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = this.createdAt.plusSeconds(1);
+    public PostModel getPost() {
+        return post;
     }
 
-    @PreUpdate
-    private void onUpdate() {
-        LocalDateTime now = LocalDateTime.now();
-        if (now.isAfter(this.createdAt)) {
-            this.updatedAt = now;
-        } else {
-            this.updatedAt = this.createdAt.plusSeconds(1);
-        }
+    public void setPost(PostModel post) {
+        this.post = post;
     }
 
     public Long getId() {
@@ -65,14 +50,6 @@ public class ProductModel {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UserModel getSeller() {
-        return seller;
-    }
-
-    public void setSeller(UserModel seller) {
-        this.seller = seller;
     }
 
     public String getName() {
@@ -115,35 +92,11 @@ public class ProductModel {
         this.notes = notes;
     }
 
-    public Integer getCategory() {
-        return category;
-    }
-
-    public void setCategory(Integer category) {
-        this.category = category;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
