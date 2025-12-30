@@ -7,7 +7,9 @@ import br.com.meli.apisocialmeli.repository.FollowRepository;
 import br.com.meli.apisocialmeli.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
 
@@ -21,17 +23,17 @@ public class FollowService {
 
     public void seguirVendedor(Long userId, Long userIdToFollow) {
         UserModel buyer = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + userId + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
         UserModel seller = userRepository.findById(userIdToFollow)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + userIdToFollow + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userIdToFollow + " não encontrado"));
 
-        if(buyer.getTipo() != UserTipo.BUYER) {
-            throw new IllegalStateException("O usuário " + userId + " não é um comprador");
+        if (buyer.getTipo() != UserTipo.BUYER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + userId + " não é um comprador");
         }
 
-        if(seller.getTipo() != UserTipo.SELLER) {
-            throw new IllegalStateException("O usuário " + userIdToFollow + " não é um vendedor");
+        if (seller.getTipo() != UserTipo.SELLER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + userIdToFollow + " não é um vendedor");
         }
 
         FollowModel followModel = new FollowModel();
@@ -43,23 +45,23 @@ public class FollowService {
 
     public void unfollowSeller(Long buyerId, Long sellerId) {
         UserModel buyer = userRepository.findById(buyerId)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + buyerId + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + buyerId + " não encontrado"));
 
         UserModel seller = userRepository.findById(sellerId)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + sellerId + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + sellerId + " não encontrado"));
 
-        if(buyer.getTipo() != UserTipo.BUYER) {
-            throw new IllegalStateException("O usuário " + buyerId + " não é um comprador");
+        if (buyer.getTipo() != UserTipo.BUYER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + buyerId + " não é um comprador");
         }
 
-        if(seller.getTipo() != UserTipo.SELLER) {
-            throw new IllegalStateException("O usuário " + sellerId + " não é um vendedor");
+        if (seller.getTipo() != UserTipo.SELLER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + sellerId + " não é um vendedor");
         }
 
         Long deletados = followRepository.deleteByFollowerIdAndSellerId(buyerId, sellerId);
 
         if (deletados == 0) {
-            throw new NoSuchElementException("Follow não encontrado para comprador = " + buyerId + " e vendedor = " + sellerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Follow não encontrado para comprador = " + buyerId + " e vendedor = " + sellerId);
         }
     }
 }
