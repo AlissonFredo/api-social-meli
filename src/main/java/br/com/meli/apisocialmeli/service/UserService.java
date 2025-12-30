@@ -8,7 +8,9 @@ import br.com.meli.apisocialmeli.model.UserModel;
 import br.com.meli.apisocialmeli.model.UserTipo;
 import br.com.meli.apisocialmeli.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,10 +24,10 @@ public class UserService {
 
     public UserFollowersCountDto obterTotalSeguidoresDoVendedor(Long userId) {
         UserModel userModel = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + userId + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
         if (userModel.getTipo() == UserTipo.BUYER) {
-            throw new IllegalStateException("O usuário " + userId + " não é um vendedor");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + userId + " não é um vendedor");
         }
 
         UserFollowersCountDto userFollowersCountDto = new UserFollowersCountDto();
@@ -37,10 +39,10 @@ public class UserService {
 
     public SellerFollowersResponseDto listarSeguidoresDoVendedor(Long userId) {
         UserModel userModel = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + userId + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
         if (userModel.getTipo() == UserTipo.BUYER) {
-            throw new IllegalStateException("O usuário " + userId + " não é um vendedor");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + userId + " não é um vendedor");
         }
 
         List<UserDto> followers = userModel.getSeguidores()
@@ -63,10 +65,10 @@ public class UserService {
 
     public BuyerFollowingResponseDto listarVendedoresSeguidosPorUsuario(Long userId) {
         UserModel userModel = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + userId + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
         if (userModel.getTipo() == UserTipo.SELLER) {
-            throw new IllegalStateException("O usuário " + userId + " não é um comprador");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + userId + " não é um comprador");
         }
 
         List<UserDto> followed = userModel.getSeguindo()

@@ -21,69 +21,29 @@ public class UserController {
 
     @PostMapping("/{userId}/follow/{userIdToFollow}")
     public ResponseEntity<?> seguirVendedor(@PathVariable Long userId, @PathVariable Long userIdToFollow) {
-        try {
-            followService.seguirVendedor(userId, userIdToFollow);
-            return new ResponseEntity<>("", HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        followService.seguirVendedor(userId, userIdToFollow);
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followers/count")
     public ResponseEntity<?> obterTotalSeguidoresDoVendedor(@PathVariable Long userId) {
-        try {
-            UserFollowersCountDto response = userService.obterTotalSeguidoresDoVendedor(userId);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        UserFollowersCountDto response = userService.obterTotalSeguidoresDoVendedor(userId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followers/list")
     public ResponseEntity<?> listarSeguidoresDoVendedor(@PathVariable Long userId) {
-        try {
-            return new ResponseEntity<>(userService.listarSeguidoresDoVendedor(userId), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(userService.listarSeguidoresDoVendedor(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followed/list")
     public ResponseEntity<?> listarVendedoresSeguidosPorUsuario(@PathVariable Long userId) {
-        try {
-            return new ResponseEntity<>(userService.listarVendedoresSeguidosPorUsuario(userId), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(userService.listarVendedoresSeguidosPorUsuario(userId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}/unfollow/{userIdTounfollow}")
     public ResponseEntity<?> unfollowSeller(@PathVariable Long userId, @PathVariable Long userIdTounfollow) {
-        try {
-            followService.unfollowSeller(userId, userIdTounfollow);
-            return new ResponseEntity<>("", HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        followService.unfollowSeller(userId, userIdTounfollow);
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 }
