@@ -78,5 +78,44 @@ JOIN users us ON us.nome = pares.seller_nome   AND us.tipo = 'SELLER'
 LEFT JOIN follow f ON f.follower_id = uf.id AND f.seller_id = us.id
 WHERE f.id IS NULL;
 
+-- Limpeza para evitar erros de duplicidade ao reiniciar o app
+DELETE FROM posts;
+DELETE FROM products;
+
+-- 1. Inserir Produtos (3 para cada SELLER)
+INSERT INTO products (name, type, brand, color, notes, created_at)
+SELECT
+    CONCAT('Produto ', p.idx, ' de ', u.nome) AS name,
+    'HOME_FURNITURE_DECOR' AS type,
+    'Meli Brand' AS brand,
+    'Padrão' AS color,
+    'Nota de teste automatizado' AS notes,
+    NOW()
+FROM users u
+         CROSS JOIN (SELECT 1 AS idx UNION ALL SELECT 2 UNION ALL SELECT 3) p
+WHERE u.tipo = 'SELLER';
+
+-- 2. Inserir Posts associando aos produtos criados
+INSERT INTO posts (user_id, product_id, category, price, created_at)
+SELECT
+    v.user_id,
+    v.product_id,
+    100 AS category,
+    (100.00 + v.pos) AS price,
+    CASE
+        WHEN v.pos = 1 THEN DATE_SUB(NOW(), INTERVAL 15 DAY)
+        ELSE NOW()
+        END AS created_at
+FROM (
+         SELECT
+             u.id AS user_id,
+             pr.id AS product_id,
+             ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY pr.id) as pos
+         FROM users u
+                  INNER JOIN products pr ON pr.name LIKE CONCAT('%', u.nome, '%')
+         WHERE u.tipo = 'SELLER'
+     ) v;
+
+
 SET FOREIGN_KEY_CHECKS=1;
 
