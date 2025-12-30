@@ -17,15 +17,7 @@ public class ProductController {
 
     @PostMapping("publish")
     public ResponseEntity<?> cadastrarProduto(@RequestBody PostRequestDto product) {
-        try {
-            return new ResponseEntity<>(productService.cadastrarProduto(product), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(productService.cadastrarProduto(product), HttpStatus.OK);
     }
 
     @GetMapping("followed/{userId}/list")

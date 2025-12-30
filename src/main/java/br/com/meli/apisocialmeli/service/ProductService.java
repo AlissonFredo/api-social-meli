@@ -31,10 +31,10 @@ public class ProductService {
 
     public PostResponseDto cadastrarProduto(PostRequestDto productDto) {
         UserModel seller = userRepository.findById(productDto.getUserId())
-                .orElseThrow(() -> new NoSuchElementException("Usuário " + productDto.getUserId() + " não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + productDto.getUserId() + " não encontrado"));
 
         if (seller.getTipo() == UserTipo.BUYER) {
-            throw new IllegalStateException("O usuário " + productDto.getUserId() + " não é um vendedor");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + productDto.getUserId() + " não é um vendedor");
         }
 
         ProductModel productModel = new ProductModel();
