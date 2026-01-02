@@ -21,7 +21,7 @@ public class ProductController {
     }
 
     @GetMapping("followed/{userId}/list")
-    public ResponseEntity<?> getFollowedSuppliersRecentProducts(@PathVariable Long userId) {
-        return new ResponseEntity<>(productService.getFollowedSuppliersRecentProducts(userId), HttpStatus.OK);
+    public ResponseEntity<?> getFollowedSuppliersRecentProducts(@PathVariable Long userId, @RequestParam(name = "order", required = false, defaultValue = "date_asc") String order) {
+        return new ResponseEntity<>(productService.getFollowedSuppliersRecentProducts(userId, order), HttpStatus.OK);
     }
 }

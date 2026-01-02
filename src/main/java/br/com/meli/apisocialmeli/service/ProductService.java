@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class ProductService {
         return new PostResponseDto(postSalved);
     }
 
-    public PostsFollowingLastTwoWeeksResponseDto getFollowedSuppliersRecentProducts(Long userId) {
+    public PostsFollowingLastTwoWeeksResponseDto getFollowedSuppliersRecentProducts(Long userId, String order) {
         UserModel buyer = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
@@ -78,7 +79,13 @@ public class ProductService {
         List<PostResponseDto> postsDto = posts
                 .stream()
                 .map(PostResponseDto::new)
-                .toList();
+                .collect(Collectors.toList());
+
+        if (order.equals("date_asc")) {
+            postsDto.sort(Comparator.comparing(PostResponseDto::getCreatedAt));
+        } else if (order.equals("date_desc")) {
+            postsDto.sort(Comparator.comparing(PostResponseDto::getCreatedAt).reversed());
+        }
 
         return new PostsFollowingLastTwoWeeksResponseDto(buyer.getId(), postsDto);
     }
