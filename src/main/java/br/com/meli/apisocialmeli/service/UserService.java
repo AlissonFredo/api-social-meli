@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class UserService {
         return userFollowersCountDto;
     }
 
-    public SellerFollowersResponseDto listarSeguidoresDoVendedor(Long userId) {
+    public SellerFollowersResponseDto listarSeguidoresDoVendedor(Long userId, String order) {
         UserModel userModel = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
@@ -54,6 +55,12 @@ public class UserService {
                     return userDto;
                 })
                 .collect(Collectors.toList());
+
+        if (order.equals("name_desc")) {
+            followers.sort(Comparator.comparing(UserDto::getUserName).reversed());
+        } else if (order.equals("name_asc")) {
+            followers.sort(Comparator.comparing(UserDto::getUserName));
+        }
 
         SellerFollowersResponseDto sellerFollowersResponseDto = new SellerFollowersResponseDto();
         sellerFollowersResponseDto.setUserId(userModel.getId());

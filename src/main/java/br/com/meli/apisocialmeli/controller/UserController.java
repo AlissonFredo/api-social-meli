@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followers/list")
-    public ResponseEntity<?> listarSeguidoresDoVendedor(@PathVariable Long userId) {
-        return new ResponseEntity<>(userService.listarSeguidoresDoVendedor(userId), HttpStatus.OK);
+    public ResponseEntity<?> listarSeguidoresDoVendedor(@PathVariable Long userId, @RequestParam(name = "order", required = false, defaultValue = "name_asc") String order) {
+        return new ResponseEntity<>(userService.listarSeguidoresDoVendedor(userId, order), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followed/list")
