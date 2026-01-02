@@ -102,20 +102,17 @@ SELECT
     v.product_id,
     100 AS category,
     (100.00 + v.pos) AS price,
-    CASE
-        WHEN v.pos = 1 THEN DATE_SUB(NOW(), INTERVAL 15 DAY)
-        ELSE NOW()
-        END AS created_at
+    (CASE WHEN v.pos = 1 THEN DATE_SUB(NOW(), INTERVAL 15 DAY) ELSE NOW() END) - INTERVAL (v.seq - 1) SECOND AS created_at
 FROM (
-         SELECT
-             u.id AS user_id,
-             pr.id AS product_id,
-             ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY pr.id) as pos
-         FROM users u
-                  INNER JOIN products pr ON pr.name LIKE CONCAT('%', u.nome, '%')
-         WHERE u.tipo = 'SELLER'
-     ) v;
-
+    SELECT
+        u.id AS user_id,
+        pr.id AS product_id,
+        ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY pr.id) AS pos,
+        ROW_NUMBER() OVER (ORDER BY u.id, pr.id) AS seq
+    FROM users u
+    INNER JOIN products pr ON pr.name LIKE CONCAT('%', u.nome, '%')
+    WHERE u.tipo = 'SELLER'
+) v;
 
 SET FOREIGN_KEY_CHECKS=1;
 
