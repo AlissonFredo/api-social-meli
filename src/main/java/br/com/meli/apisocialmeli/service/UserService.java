@@ -70,7 +70,7 @@ public class UserService {
         return sellerFollowersResponseDto;
     }
 
-    public BuyerFollowingResponseDto listarVendedoresSeguidosPorUsuario(Long userId) {
+    public BuyerFollowingResponseDto listarVendedoresSeguidosPorUsuario(Long userId, String order) {
         UserModel userModel = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + userId + " não encontrado"));
 
@@ -87,6 +87,12 @@ public class UserService {
                     return userDto;
                 })
                 .collect(Collectors.toList());
+
+        if (order.equals("name_desc")) {
+            followed.sort(Comparator.comparing(UserDto::getUserName).reversed());
+        } else if (order.equals("name_asc")) {
+            followed.sort(Comparator.comparing(UserDto::getUserName));
+        }
 
         BuyerFollowingResponseDto buyerFollowingResponseDto = new BuyerFollowingResponseDto();
         buyerFollowingResponseDto.setUserId(userModel.getId());

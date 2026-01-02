@@ -37,8 +37,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followed/list")
-    public ResponseEntity<?> listarVendedoresSeguidosPorUsuario(@PathVariable Long userId) {
-        return new ResponseEntity<>(userService.listarVendedoresSeguidosPorUsuario(userId), HttpStatus.OK);
+    public ResponseEntity<?> listarVendedoresSeguidosPorUsuario(@PathVariable Long userId, @RequestParam(name = "order", required = false, defaultValue = "name_asc") String order) {
+        return new ResponseEntity<>(userService.listarVendedoresSeguidosPorUsuario(userId, order), HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}/unfollow/{userIdTounfollow}")
