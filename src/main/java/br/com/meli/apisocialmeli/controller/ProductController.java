@@ -1,5 +1,6 @@
 package br.com.meli.apisocialmeli.controller;
 
+import br.com.meli.apisocialmeli.dto.PostPromoPubRequestDto;
 import br.com.meli.apisocialmeli.dto.PostRequestDto;
 import br.com.meli.apisocialmeli.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +24,10 @@ public class ProductController {
     @GetMapping("followed/{userId}/list")
     public ResponseEntity<?> getFollowedSuppliersRecentProducts(@PathVariable Long userId, @RequestParam(name = "order", required = false, defaultValue = "date_asc") String order) {
         return new ResponseEntity<>(productService.getFollowedSuppliersRecentProducts(userId, order), HttpStatus.OK);
+    }
+
+    @PostMapping("promo-pub")
+    private ResponseEntity<?> cadastraProdutoPromocional(@RequestBody PostPromoPubRequestDto post) {
+        return new ResponseEntity<>(productService.cadastraProdutoPromocional(post), HttpStatus.OK);
     }
 }

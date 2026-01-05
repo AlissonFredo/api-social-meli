@@ -31,6 +31,28 @@ public class PostModel {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "has_promo", nullable = false,  columnDefinition = "TINYINT(1) default 0")
+    private Boolean hasPromo;
+
+    @Column(nullable=false, columnDefinition="DECIMAL(10,2) default 0")
+    private BigDecimal discount;
+
+    public Boolean getHasPromo() {
+        return hasPromo;
+    }
+
+    public void setHasPromo(Boolean hasPromo) {
+        this.hasPromo = hasPromo;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,8 +1,6 @@
 package br.com.meli.apisocialmeli.service;
 
-import br.com.meli.apisocialmeli.dto.PostRequestDto;
-import br.com.meli.apisocialmeli.dto.PostResponseDto;
-import br.com.meli.apisocialmeli.dto.PostsFollowingLastTwoWeeksResponseDto;
+import br.com.meli.apisocialmeli.dto.*;
 import br.com.meli.apisocialmeli.model.*;
 import br.com.meli.apisocialmeli.repository.PostRepository;
 import br.com.meli.apisocialmeli.repository.ProductRepository;
@@ -88,6 +86,34 @@ public class ProductService {
         }
 
         return new PostsFollowingLastTwoWeeksResponseDto(buyer.getId(), postsDto);
+    }
+
+    public PostPromoPubResponseDto cadastraProdutoPromocional(PostPromoPubRequestDto postDto) {
+        UserModel seller = userRepository.findById(postDto.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + postDto.getUserId() + " não encontrado"));
+
+        if (seller.getTipo() == UserTipo.BUYER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + postDto.getUserId() + " não é um vendedor");
+        }
+
+        ProductModel productModel = new ProductModel();
+        productModel.setName(postDto.getProduct().getProductName());
+        productModel.setType(postDto.getProduct().getType());
+        productModel.setBrand(postDto.getProduct().getBrand());
+        productModel.setColor(postDto.getProduct().getColor());
+        productModel.setNotes(postDto.getProduct().getNotes());
+        ProductModel productSalved = productRepository.save(productModel);
+
+        PostModel post = new PostModel();
+        post.setCategory(postDto.getCategory());
+        post.setPrice(postDto.getPrice());
+        post.setSeller(seller);
+        post.setHasPromo(postDto.getHasPromo());
+        post.setDiscount(postDto.getDiscount());
+        post.setProduto(productSalved);
+        PostModel postSalved = postRepository.save(post);
+
+        return new PostPromoPubResponseDto(postSalved);
     }
 }
 
