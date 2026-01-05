@@ -13,6 +13,8 @@ public class PostResponseDto {
     private BigDecimal price;
     private ProductResponseDto product;
     private LocalDateTime createdAt;
+    private Boolean hasPromo;
+    private BigDecimal discount;
 
     public PostResponseDto() {
     }
@@ -24,6 +26,8 @@ public class PostResponseDto {
         this.price = post.getPrice();
         this.product = new ProductResponseDto(post.getProduto());
         this.createdAt = post.getCreatedAt();
+        this.hasPromo = post.getHasPromo();
+        this.discount = post.getDiscount();
     }
 
     public Long getId() {
@@ -72,5 +76,21 @@ public class PostResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Boolean getHasPromo() {
+        return hasPromo;
+    }
+
+    public void setHasPromo(Boolean hasPromo) {
+        this.hasPromo = hasPromo;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
     }
 }
