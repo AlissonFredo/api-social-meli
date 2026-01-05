@@ -115,5 +115,18 @@ public class ProductService {
 
         return new PostPromoPubResponseDto(postSalved);
     }
+
+    public TotalProdutosPromoResponnseDto obterTotalPordutosPromoVendedor(Long sellerId) {
+        UserModel seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + sellerId + " não encontrado"));
+
+        if (seller.getTipo() == UserTipo.BUYER) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "O usuário " + sellerId + " não é um vendedor");
+        }
+
+        Integer totalProdutosPromo = postRepository.countBySellerIdAndHasPromoTrue(sellerId);
+
+        return new TotalProdutosPromoResponnseDto(seller.getId(), seller.getNome(), totalProdutosPromo);
+    }
 }
 

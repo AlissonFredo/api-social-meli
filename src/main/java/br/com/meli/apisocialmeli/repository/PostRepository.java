@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<PostModel, Long> {
     List<PostModel> findBySellerIdInAndCreatedAtBetween(List<Long> sellerIds, LocalDateTime start, LocalDateTime end);
+
+    Integer countBySellerIdAndHasPromoTrue(Long sellerId);
 }

@@ -27,7 +27,12 @@ public class ProductController {
     }
 
     @PostMapping("promo-pub")
-    private ResponseEntity<?> cadastraProdutoPromocional(@RequestBody PostPromoPubRequestDto post) {
+    public ResponseEntity<?> cadastraProdutoPromocional(@RequestBody PostPromoPubRequestDto post) {
         return new ResponseEntity<>(productService.cadastraProdutoPromocional(post), HttpStatus.OK);
+    }
+
+    @GetMapping("promo-pub/count")
+    public ResponseEntity<?> obterTotalPordutosPromoVendedor(@RequestParam(name = "userId") Long userId) {
+        return new ResponseEntity<>(productService.obterTotalPordutosPromoVendedor(userId), HttpStatus.OK);
     }
 }
