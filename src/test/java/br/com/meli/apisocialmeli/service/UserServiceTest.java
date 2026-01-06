@@ -1,5 +1,6 @@
 package br.com.meli.apisocialmeli.service;
 
+import br.com.meli.apisocialmeli.dto.SellerFollowersResponseDto;
 import br.com.meli.apisocialmeli.dto.UserFollowersCountDto;
 import br.com.meli.apisocialmeli.model.FollowModel;
 import br.com.meli.apisocialmeli.model.UserModel;
@@ -87,6 +88,153 @@ public class UserServiceTest {
         // Assert/Verify (verificações)
         assertEquals(422, ex.getStatusCode().value());
         assertTrue(ex.getReason().contains("O usuário " + userId + " não é um vendedor"));
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void listarSeguidoresDoVendedorDeveLancar404QuandoUsuarioNaoExiste() {
+        // Arrange (preparação)
+        Long userId = 99L;
+        String order = "name_asc";
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Act (execução)
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> userService.listarSeguidoresDoVendedor(userId, order));
+
+        // Assert/Verify (verificações)
+        assertEquals(404, ex.getStatusCode().value());
+        assertTrue(ex.getReason().contains("Usuário " + userId + " não encontrado"));
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void listarSeguidoresDoVendedorDeveLancar422QuandoUsuarioEhBuyer() {
+        // Arrange (preparação)
+        Long userId = 99L;
+        String order = "name_asc";
+
+        UserModel buyer = new UserModel();
+        buyer.setTipo(UserTipo.BUYER);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buyer));
+
+        // Act (execução)
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> userService.listarSeguidoresDoVendedor(userId, order));
+
+        // Assert/Verify (verificações)
+        assertEquals(422, ex.getStatusCode().value());
+        assertTrue(ex.getReason().contains("O usuário " + userId + " não é um vendedor"));
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void listarSeguidoresDoVendedorDeveRetornarDtoComListagemAscendenteDeSeguidoresDoVendedor() {
+        // Arrange (preparação)
+        Long userId = 10L;
+        String order = "name_asc";
+
+        UserModel seller = new UserModel();
+        seller.setId(userId);
+        seller.setNome("Vendedor A");
+        seller.setTipo(UserTipo.SELLER);
+
+        UserModel u1 = new UserModel();
+        u1.setId(1L);
+        u1.setNome("Carlos");
+
+        UserModel u2 = new UserModel();
+        u2.setId(2L);
+        u2.setNome("Ana");
+
+        UserModel u3 = new UserModel();
+        u3.setId(3L);
+        u3.setNome("Bruna");
+
+        FollowModel f1 = new FollowModel();
+        f1.setFollower(u1);
+
+        FollowModel f2 = new FollowModel();
+        f2.setFollower(u2);
+
+        FollowModel f3 = new FollowModel();
+        f3.setFollower(u3);
+
+        Set<FollowModel> seguidores = new HashSet<>();
+        seguidores.add(f1);
+        seguidores.add(f2);
+        seguidores.add(f3);
+        seller.setSeguidores(seguidores);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(seller));
+
+        // Act (execução)
+        SellerFollowersResponseDto dto = userService.listarSeguidoresDoVendedor(userId, order);
+
+        // Assert/Verify (verificações)
+        assertEquals(userId, dto.getUserId());
+        assertEquals("Vendedor A", dto.getUserName());
+        assertEquals(Integer.valueOf(3), dto.getFollowers().size());
+
+        assertEquals("Ana", dto.getFollowers().get(0).getUserName());
+        assertEquals("Bruna", dto.getFollowers().get(1).getUserName());
+        assertEquals("Carlos", dto.getFollowers().get(2).getUserName());
+
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void listarSeguidoresDoVendedorDeveRetornarDtoComListagemDescendenteDeSeguidoresDoVendedor() {
+        // Arrange (preparação)
+        Long userId = 10L;
+        String order = "name_desc";
+
+        UserModel seller = new UserModel();
+        seller.setId(userId);
+        seller.setNome("Vendedor A");
+        seller.setTipo(UserTipo.SELLER);
+
+        UserModel u1 = new UserModel();
+        u1.setId(1L);
+        u1.setNome("Carlos");
+
+        UserModel u2 = new UserModel();
+        u2.setId(2L);
+        u2.setNome("Ana");
+
+        UserModel u3 = new UserModel();
+        u3.setId(3L);
+        u3.setNome("Bruna");
+
+        FollowModel f1 = new FollowModel();
+        f1.setFollower(u1);
+
+        FollowModel f2 = new FollowModel();
+        f2.setFollower(u2);
+
+        FollowModel f3 = new FollowModel();
+        f3.setFollower(u3);
+
+        Set<FollowModel> seguidores = new HashSet<>();
+        seguidores.add(f1);
+        seguidores.add(f2);
+        seguidores.add(f3);
+        seller.setSeguidores(seguidores);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(seller));
+
+        // Act (execução)
+        SellerFollowersResponseDto dto = userService.listarSeguidoresDoVendedor(userId, order);
+
+        // Assert/Verify (verificações)
+        assertEquals(userId, dto.getUserId());
+        assertEquals("Vendedor A", dto.getUserName());
+        assertEquals(Integer.valueOf(3), dto.getFollowers().size());
+
+        assertEquals("Carlos", dto.getFollowers().get(0).getUserName());
+        assertEquals("Bruna", dto.getFollowers().get(1).getUserName());
+        assertEquals("Ana", dto.getFollowers().get(2).getUserName());
+
         verify(userRepository).findById(userId);
     }
 }
