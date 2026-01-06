@@ -28,7 +28,7 @@ public class UserServiceTest {
     UserService userService;
 
     @Test
-    void deveRetornarDtoComContagemQuandoVendedorExiste() {
+    void obterTotalSeguidoresDoVendedorDeveRetornarDtoComContagemQuandoVendedorExiste() {
         // Arrange (preparação)
         Long userId = 10L;
 
@@ -56,7 +56,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void deveLancar404QuandoUsuarioNaoExiste() {
+    void obterTotalSeguidoresDoVendedorDeveLancar404QuandoUsuarioNaoExiste() {
         // Arrange (preparação)
         Long userId = 99L;
 
@@ -72,7 +72,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void deveLancar422QuandoUsuarioEhBuyer() {
+    void obterTotalSeguidoresDoVendedorDeveLancar422QuandoUsuarioEhBuyer() {
         // Arrange (preparação)
         Long userId = 2L;
 
