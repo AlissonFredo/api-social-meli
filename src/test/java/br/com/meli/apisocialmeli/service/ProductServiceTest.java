@@ -3,6 +3,7 @@ package br.com.meli.apisocialmeli.service;
 import br.com.meli.apisocialmeli.dto.PostRequestDto;
 import br.com.meli.apisocialmeli.dto.PostResponseDto;
 import br.com.meli.apisocialmeli.dto.ProductRequestDto;
+import br.com.meli.apisocialmeli.dto.TotalProdutosPromoResponnseDto;
 import br.com.meli.apisocialmeli.model.*;
 import br.com.meli.apisocialmeli.repository.PostRepository;
 import br.com.meli.apisocialmeli.repository.ProductRepository;
@@ -147,5 +148,71 @@ public class ProductServiceTest {
         assertEquals(1L, postToSave.getProduto().getId());
 
         assertEquals(99L, resDto.getId());
+    }
+
+    @Test
+    void obterTotalPordutosPromoVendedorDeveLancar404QuandoUsuarioNaoExiste() {
+        // Arrange (preparação)
+        Long sellerId = 21L;
+
+        when(userRepository.findById(sellerId)).thenReturn(Optional.empty());
+
+        // Act (execução)
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> productService.obterTotalPordutosPromoVendedor(sellerId)
+        );
+
+        // Assert/Verify (verificações)
+        assertEquals(404, ex.getStatusCode().value());
+        assertNotNull(ex.getReason());
+        assertTrue(ex.getReason().contains("Usuário " + sellerId + " não encontrado"));
+        verify(userRepository).findById(sellerId);
+    }
+
+    @Test
+    void obterTotalPordutosPromoVendedorDeveLancar422QuandoSellerIdEhBuyerId() {
+        // Arrange (preparação)
+        Long buyerId = 1L;
+
+        UserModel user = new UserModel();
+        user.setTipo(UserTipo.BUYER);
+
+        when(userRepository.findById(buyerId)).thenReturn(Optional.of(user));
+
+        // Act (execução)
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> productService.obterTotalPordutosPromoVendedor(buyerId)
+        );
+
+        // Assert/Verify (verificações)
+        assertEquals(422, ex.getStatusCode().value());
+        assertNotNull(ex.getReason());
+        assertTrue(ex.getReason().contains("O usuário " + buyerId + " não é um vendedor"));
+    }
+
+    @Test
+    void obterTotalPordutosPromoVendedorDeveRetornarTotalProdutosPromoResponnseDto() {
+        // Arrange (preparação)
+        Long sellerId = 1L;
+
+        UserModel user = new UserModel();
+        user.setTipo(UserTipo.SELLER);
+        user.setNome("Vendedor A");
+        user.setId(sellerId);
+
+        when(userRepository.findById(sellerId)).thenReturn(Optional.of(user));
+        when(postRepository.countBySellerIdAndHasPromoTrue(sellerId)).thenReturn(3);
+
+        // Act (execução)
+        TotalProdutosPromoResponnseDto dto = productService.obterTotalPordutosPromoVendedor(sellerId);
+
+        // Assert/Verify (verificações)
+        assertEquals(sellerId, dto.getUserId());
+        assertEquals("Vendedor A", dto.getUserName());
+        assertEquals(Integer.valueOf(3), dto.getPromoProductsCount());
+        verify(userRepository).findById(sellerId);
+        verify(postRepository).countBySellerIdAndHasPromoTrue(sellerId);
     }
 }
