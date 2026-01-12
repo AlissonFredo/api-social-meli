@@ -14,7 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -327,5 +328,229 @@ public class ProductServiceTest {
         assertEquals(1L, postToSave.getProduto().getId());
         assertEquals(true, postToSave.getHasPromo());
         assertEquals(BigDecimal.valueOf(0.5), postToSave.getDiscount());
+    }
+
+    @Test
+    void getFollowedSuppliersRecentProducts404QuandoUsuarioNaoExiste() {
+        // Arrange (preparação)
+        Long sellerId = 21L;
+        String order = "date_asc";
+
+        when(userRepository.findById(sellerId)).thenReturn(Optional.empty());
+
+        // Act (execução)
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> productService.getFollowedSuppliersRecentProducts(sellerId, order)
+        );
+
+        // Assert/Verify (verificações)
+        assertEquals(404, ex.getStatusCode().value());
+        assertNotNull(ex.getReason());
+        assertTrue(ex.getReason().contains("Usuário " + sellerId + " não encontrado"));
+        verify(userRepository).findById(sellerId);
+    }
+
+    @Test
+    void getFollowedSuppliersRecentProductsDeveLancar422QuandoBuyerIdEhSellerId() {
+        // Arrange (preparação)
+        Long sellerId = 1L;
+        String order = "date_asc";
+
+        UserModel user = new UserModel();
+        user.setTipo(UserTipo.SELLER);
+
+        when(userRepository.findById(sellerId)).thenReturn(Optional.of(user));
+
+        // Act (execução)
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> productService.getFollowedSuppliersRecentProducts(sellerId, order)
+        );
+
+        // Assert/Verify (verificações)
+        assertEquals(422, ex.getStatusCode().value());
+        assertNotNull(ex.getReason());
+        assertTrue(ex.getReason().contains("O usuário " + sellerId + " não é um comprador"));
+    }
+
+    @Test
+    void getFollowedSuppliersRecentProductsDeveRetornarPostsFollowingLastTwoWeeksResponseDtoOrderDataAsc() {
+        // Arrange (preparação)
+        Long buyerId = 1L;
+        String order = "date_asc";
+
+        UserModel buyer = new UserModel();
+        buyer.setId(buyerId);
+        buyer.setNome("Comprador X");
+        buyer.setTipo(UserTipo.BUYER);
+
+        UserModel seller1 = new UserModel();
+        seller1.setId(10L);
+        seller1.setNome("Vendedor A");
+        seller1.setTipo(UserTipo.SELLER);
+
+        UserModel seller2 = new UserModel();
+        seller2.setId(20L);
+        seller2.setNome("Vendedor B");
+        seller2.setTipo(UserTipo.SELLER);
+
+        FollowModel f1 = new FollowModel();
+        f1.setSeller(seller1);
+
+        FollowModel f2 = new FollowModel();
+        f2.setSeller(seller2);
+
+        Set<FollowModel> following = new HashSet<>();
+        following.add(f1);
+        following.add(f2);
+        buyer.setSeguindo(following);
+
+        when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        ProductModel product = new ProductModel();
+        product.setId(1L);
+        product.setName("PS2");
+        product.setType(ProductType.VIDEO_GAMES);
+        product.setBrand("Meli Brand");
+        product.setColor("PRETO");
+
+        PostModel p1 = new PostModel();
+        p1.setId(100L);
+        p1.setSeller(seller1);
+        p1.setCreatedAt(now.minusDays(12));
+        p1.setProduto(product);
+
+        PostModel p2 = new PostModel();
+        p2.setId(101L);
+        p2.setSeller(seller2);
+        p2.setCreatedAt(now.minusDays(3));
+        p2.setProduto(product);
+
+        PostModel p3 = new PostModel();
+        p3.setId(103L);
+        p3.setSeller(seller1);
+        p3.setCreatedAt(now.minusDays(8));
+        p3.setProduto(product);
+
+        when(postRepository.findBySellerIdInAndCreatedAtBetween(
+                anyList(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(Arrays.asList(p2, p1, p3));
+
+        // Act (execução)
+        PostsFollowingLastTwoWeeksResponseDto dto = productService.getFollowedSuppliersRecentProducts(buyerId, order);
+
+        // Assert/Verify (verificações)
+        assertNotNull(dto);
+        assertEquals(buyerId, dto.getUserId());
+
+        List<PostResponseDto> postsDto = dto.getPosts();
+        assertEquals(3, postsDto.size());
+
+        assertEquals(p1.getCreatedAt(), postsDto.get(0).getCreatedAt());
+        assertEquals(p3.getCreatedAt(), postsDto.get(1).getCreatedAt());
+        assertEquals(p2.getCreatedAt(), postsDto.get(2).getCreatedAt());
+
+        verify(userRepository).findById(buyerId);
+        verify(postRepository).findBySellerIdInAndCreatedAtBetween(
+                argThat(ids -> ids != null && ids.size() == 2 && ids.containsAll(List.of(10L, 20L))),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        );
+        verifyNoMoreInteractions(userRepository, postRepository);
+    }
+
+    @Test
+    void getFollowedSuppliersRecentProductsDeveRetornarPostsFollowingLastTwoWeeksResponseDtoOrderDataDesc() {
+        // Arrange (preparação)
+        Long buyerId = 1L;
+        String order = "date_desc";
+
+        UserModel buyer = new UserModel();
+        buyer.setId(buyerId);
+        buyer.setNome("Comprador X");
+        buyer.setTipo(UserTipo.BUYER);
+
+        UserModel seller1 = new UserModel();
+        seller1.setId(10L);
+        seller1.setNome("Vendedor A");
+        seller1.setTipo(UserTipo.SELLER);
+
+        UserModel seller2 = new UserModel();
+        seller2.setId(20L);
+        seller2.setNome("Vendedor B");
+        seller2.setTipo(UserTipo.SELLER);
+
+        FollowModel f1 = new FollowModel();
+        f1.setSeller(seller1);
+
+        FollowModel f2 = new FollowModel();
+        f2.setSeller(seller2);
+
+        Set<FollowModel> following = new HashSet<>();
+        following.add(f1);
+        following.add(f2);
+        buyer.setSeguindo(following);
+
+        when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        ProductModel product = new ProductModel();
+        product.setId(1L);
+        product.setName("PS2");
+        product.setType(ProductType.VIDEO_GAMES);
+        product.setBrand("Meli Brand");
+        product.setColor("PRETO");
+
+        PostModel p1 = new PostModel();
+        p1.setId(100L);
+        p1.setSeller(seller1);
+        p1.setCreatedAt(now.minusDays(12));
+        p1.setProduto(product);
+
+        PostModel p2 = new PostModel();
+        p2.setId(101L);
+        p2.setSeller(seller2);
+        p2.setCreatedAt(now.minusDays(3));
+        p2.setProduto(product);
+
+        PostModel p3 = new PostModel();
+        p3.setId(103L);
+        p3.setSeller(seller1);
+        p3.setCreatedAt(now.minusDays(8));
+        p3.setProduto(product);
+
+        when(postRepository.findBySellerIdInAndCreatedAtBetween(
+                anyList(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(Arrays.asList(p2, p1, p3));
+
+        // Act (execução)
+        PostsFollowingLastTwoWeeksResponseDto dto = productService.getFollowedSuppliersRecentProducts(buyerId, order);
+
+        // Assert/Verify (verificações)
+        assertNotNull(dto);
+        assertEquals(buyerId, dto.getUserId());
+
+        List<PostResponseDto> postsDto = dto.getPosts();
+        assertEquals(3, postsDto.size());
+
+        assertEquals(p1.getCreatedAt(), postsDto.get(2).getCreatedAt());
+        assertEquals(p3.getCreatedAt(), postsDto.get(1).getCreatedAt());
+        assertEquals(p2.getCreatedAt(), postsDto.get(0).getCreatedAt());
+
+        verify(userRepository).findById(buyerId);
+        verify(postRepository).findBySellerIdInAndCreatedAtBetween(
+                argThat(ids -> ids != null && ids.size() == 2 && ids.containsAll(List.of(10L, 20L))),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        );
+        verifyNoMoreInteractions(userRepository, postRepository);
     }
 }
