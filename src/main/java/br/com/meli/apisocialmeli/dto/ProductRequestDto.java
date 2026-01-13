@@ -1,12 +1,29 @@
 package br.com.meli.apisocialmeli.dto;
 
 import br.com.meli.apisocialmeli.model.ProductType;
+import jakarta.validation.constraints.*;
 
 public class ProductRequestDto {
+    @NotBlank(message = "O campo não pode estar vazio.")
+    @Size(max = 40, message = "O comprimento não pode exceder 40 caracteres.")
+    @Pattern(regexp = "^[\\p{L}\\p{N} ]+$", message = "O campo não pode conter caracteres especiais.")
     private String productName;
+
+    @NotNull
     private ProductType type;
+
+    @NotBlank(message = "O campo não pode estar vazio.")
+    @Size(max = 25, message = "O comprimento não pode exceder 25 caracteres.")
+    @Pattern(regexp = "^[\\p{L}\\p{N} ]+$", message = "O campo não pode conter caracteres especiais.")
     private String brand;
+
+    @NotBlank(message = "O campo não pode estar vazio.")
+    @Size(max = 15, message = "O comprimento não pode exceder 15 caracteres.")
+    @Pattern(regexp = "^[\\p{L}\\p{N} ]+$", message = "O campo não pode conter caracteres especiais.")
     private String color;
+
+    @Size(max = 80, message = "O comprimento não pode exceder 80 caracteres.")
+    @Pattern(regexp = "^[\\p{L}\\p{N} ]*$", message = "O campo não pode conter caracteres especiais.")
     private String notes;
 
     public String getProductName() {

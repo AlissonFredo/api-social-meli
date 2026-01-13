@@ -1,13 +1,28 @@
 package br.com.meli.apisocialmeli.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 
 public class PostPromoPubRequestDto {
+    @NotNull(message = "O id não pode estar vazio.")
+    @Min(value = 1, message = "id deve ser maior que zero.")
     private Long userId;
+
+    @NotNull(message = "O campo não pode estar vazio.")
     private Integer category;
+
+    @Valid
+    @NotNull(message = "O campo não pode estar vazio.")
     private ProductRequestDto product;
+
+    @NotNull(message = "O campo não pode estar vazio.")
+    @DecimalMax(value = "10000000", inclusive = true, message = "O preço máximo por produto é de 10.000.000.")
     private BigDecimal price;
+
     private Boolean hasPromo;
+
     private BigDecimal discount;
 
     public Boolean getHasPromo() {

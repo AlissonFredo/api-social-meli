@@ -3,6 +3,7 @@ package br.com.meli.apisocialmeli.controller;
 import br.com.meli.apisocialmeli.dto.PostPromoPubRequestDto;
 import br.com.meli.apisocialmeli.dto.PostRequestDto;
 import br.com.meli.apisocialmeli.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class ProductController implements ProductControllerDocs {
 
     @PostMapping("publish")
     @Override
-    public ResponseEntity<?> cadastrarProduto(@RequestBody PostRequestDto product) {
+    public ResponseEntity<?> cadastrarProduto(@Valid @RequestBody PostRequestDto product) {
         return new ResponseEntity<>(productService.cadastrarProduto(product), HttpStatus.OK);
     }
 
@@ -28,7 +29,7 @@ public class ProductController implements ProductControllerDocs {
 
     @PostMapping("promo-pub")
     @Override
-    public ResponseEntity<?> cadastraProdutoPromocional(@RequestBody PostPromoPubRequestDto post) {
+    public ResponseEntity<?> cadastraProdutoPromocional(@Valid @RequestBody PostPromoPubRequestDto post) {
         return new ResponseEntity<>(productService.cadastraProdutoPromocional(post), HttpStatus.OK);
     }
 
