@@ -49,4 +49,9 @@ public class UserController implements UserControllerDocs {
         followService.unfollowSeller(userId, userIdTounfollow);
         return new ResponseEntity<>("", HttpStatus.OK);
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> listaUsuarios() {
+        return new ResponseEntity<>(userService.listaUsuarios(), HttpStatus.OK);
+    }
 }

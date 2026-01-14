@@ -1,9 +1,6 @@
 package br.com.meli.apisocialmeli.service;
 
-import br.com.meli.apisocialmeli.dto.BuyerFollowingResponseDto;
-import br.com.meli.apisocialmeli.dto.SellerFollowersResponseDto;
-import br.com.meli.apisocialmeli.dto.UserDto;
-import br.com.meli.apisocialmeli.dto.UserFollowersCountDto;
+import br.com.meli.apisocialmeli.dto.*;
 import br.com.meli.apisocialmeli.model.UserModel;
 import br.com.meli.apisocialmeli.model.UserTipo;
 import br.com.meli.apisocialmeli.repository.UserRepository;
@@ -100,5 +97,12 @@ public class UserService {
         buyerFollowingResponseDto.setFollowed(followed);
 
         return buyerFollowingResponseDto;
+    }
+
+    public List<UserResponseDto> listaUsuarios() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserResponseDto(user.getId(), user.getNome(), user.getTipo()))
+                .collect(Collectors.toList());
     }
 }
