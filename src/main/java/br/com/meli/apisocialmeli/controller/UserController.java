@@ -47,7 +47,7 @@ public class UserController implements UserControllerDocs {
     @Override
     public ResponseEntity<?> unfollowSeller(@PathVariable Long userId, @PathVariable Long userIdTounfollow) {
         followService.unfollowSeller(userId, userIdTounfollow);
-        return new ResponseEntity<>("", HttpStatus.OK);
+        return new ResponseEntity<>("sucesso", HttpStatus.OK);
     }
 
     @GetMapping("/list")
