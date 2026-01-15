@@ -5,13 +5,11 @@ import br.com.meli.apisocialmeli.model.UserModel;
 import br.com.meli.apisocialmeli.model.UserTipo;
 import br.com.meli.apisocialmeli.repository.FollowRepository;
 import br.com.meli.apisocialmeli.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.NoSuchElementException;
 
 @Service
 public class FollowService {
@@ -43,6 +41,7 @@ public class FollowService {
         followRepository.save(followModel);
     }
 
+    @Transactional
     public void unfollowSeller(Long buyerId, Long sellerId) {
         UserModel buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário " + buyerId + " não encontrado"));
