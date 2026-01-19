@@ -32,10 +32,10 @@ public class PostModel {
     private LocalDateTime createdAt;
 
     @Column(name = "has_promo", nullable = false,  columnDefinition = "TINYINT(1) default 0")
-    private Boolean hasPromo;
+    private Boolean hasPromo = Boolean.FALSE;
 
     @Column(nullable=false, columnDefinition="DECIMAL(10,2) default 0")
-    private BigDecimal discount;
+    private BigDecimal discount = BigDecimal.ZERO;
 
     public Boolean getHasPromo() {
         return hasPromo;

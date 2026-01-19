@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 public class ProductRequestDto {
     @NotBlank(message = "O campo não pode estar vazio.")
     @Size(max = 40, message = "O comprimento não pode exceder 40 caracteres.")
-    @Pattern(regexp = "^[\\p{L}\\p{N} ]+$", message = "O campo não pode conter caracteres especiais.")
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\.\\, ]+$", message = "O campo não pode conter caracteres especiais.")
     private String productName;
 
     @NotNull
@@ -14,16 +14,16 @@ public class ProductRequestDto {
 
     @NotBlank(message = "O campo não pode estar vazio.")
     @Size(max = 25, message = "O comprimento não pode exceder 25 caracteres.")
-    @Pattern(regexp = "^[\\p{L}\\p{N} ]+$", message = "O campo não pode conter caracteres especiais.")
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\.\\, ]+$", message = "O campo não pode conter caracteres especiais.")
     private String brand;
 
     @NotBlank(message = "O campo não pode estar vazio.")
     @Size(max = 15, message = "O comprimento não pode exceder 15 caracteres.")
-    @Pattern(regexp = "^[\\p{L}\\p{N} ]+$", message = "O campo não pode conter caracteres especiais.")
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\.\\, ]+$", message = "O campo não pode conter caracteres especiais.")
     private String color;
 
     @Size(max = 80, message = "O comprimento não pode exceder 80 caracteres.")
-    @Pattern(regexp = "^[\\p{L}\\p{N} ]*$", message = "O campo não pode conter caracteres especiais.")
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\.\\, ]+$", message = "O campo não pode conter caracteres especiais.")
     private String notes;
 
     public String getProductName() {
